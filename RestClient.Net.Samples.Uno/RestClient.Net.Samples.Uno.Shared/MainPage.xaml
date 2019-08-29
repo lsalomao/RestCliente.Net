@@ -29,13 +29,13 @@
 
             <Button Content="Get My Repos"   Margin="2" x:Name="GetReposButton" />
 
-            <ComboBox x:Name="ReposBox" IsEnabled="False"   Margin="4"    >
-                <ComboBox.ItemTemplate>
+            <ListBox x:Name="ReposBox" IsEnabled="False" Background="Red" Height="200" Margin="4"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  >
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding name}" />
                     </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <TextBlock Text="Description" />
             <TextBox Text="{Binding description}"  Height="200"  />
