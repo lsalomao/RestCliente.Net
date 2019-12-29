@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 #pragma warning disable CA2000
 
@@ -70,7 +71,7 @@ namespace RestClientDotNet
 
         public async Task<RestResponseBase<TResponseBody>> GetRestResponse<TResponseBody>(HttpResponseMessage httpResponseMessage, byte[] responseBodyData, ISerializationAdapter serializationAdapter)
         {
-            if (httpResponseMessage == null) throw new ArgumentNullException(naemof());
+            if (httpResponseMessage == null) throw new ArgumentNullException(nameof(httpResponseMessage));
 
             var restHeadersCollection = new RestResponseHeaders(httpResponseMessage.Headers);
 
@@ -96,16 +97,6 @@ namespace RestClientDotNet
             );
 
             return restResponse;
-        }
-
-        public virtual Task<HttpResponseMessage> SendRestRequestAsync<TRequestBody>(HttpClient httpClient, RestRequest<TRequestBody> restRequest, byte[] requestBodyData)
-        {
-            if (restRequest == null) throw new ArgumentNullException(nameof(restRequest));
-            if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
-
-            var httpRequestMessage = GetHttpRequestMessage(restRequest, requestBodyData);
-
-            return httpClient.SendAsync(httpRequestMessage, restRequest.CancellationToken);
         }
     }
 }
