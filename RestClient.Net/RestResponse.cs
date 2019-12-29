@@ -7,8 +7,7 @@ namespace RestClientDotNet
     public class RestResponse<TResponseBody> : RestResponseBase<TResponseBody>
     {
         #region Public Properties
-        public Uri BaseUri { get; }
-        public Uri Resource { get; }
+        public Uri RequestUri { get; }
         public HttpResponseMessage HttpResponseMessage { get; }
         public override bool IsSuccess => HttpResponseMessage.IsSuccessStatusCode;
         #endregion
@@ -18,16 +17,14 @@ namespace RestClientDotNet
         (
             IRestHeaders restHeadersCollection,
             int statusCode,
-            Uri baseUri,
-            Uri resource,
+            Uri requestUri,
             HttpVerb httpVerb,
             byte[] responseContentData,
             TResponseBody body,
             HttpResponseMessage httpResponseMessage
             ) : base(restHeadersCollection, statusCode, httpVerb, responseContentData, body)
         {
-            BaseUri = baseUri;
-            Resource = resource;
+            RequestUri = requestUri;
             HttpResponseMessage = httpResponseMessage;
 
         }

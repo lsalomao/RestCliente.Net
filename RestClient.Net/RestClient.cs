@@ -133,7 +133,7 @@ namespace RestClientDotNet
 
 
 
-        private async Task<RestResponseBase<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(RestRequest<TRequestBody> restRequest, HttpClient httpClient, HttpResponseMessage httpResponseMessage)
+        private async Task<RestResponseBase<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(RestRequest<TRequestBody> restRequest, HttpResponseMessage httpResponseMessage)
         {
             byte[] responseData = null;
 
@@ -170,8 +170,7 @@ namespace RestClientDotNet
             (
                 restHeadersCollection,
                 (int)httpResponseMessage.StatusCode,
-                httpClient.BaseAddress,
-                restRequest.Resource,
+                httpResponseMessage.RequestMessage.RequestUri,
                 restRequest.HttpVerb,
                 responseData,
                 responseBody,
@@ -191,7 +190,7 @@ namespace RestClientDotNet
                 return restResponse;
             }
 
-            throw new HttpStatusException($"{restResponse.StatusCode}.\r\nrestRequest.Resource: {restRequest.Resource}", restResponse, this);
+            throw new HttpStatusException($"A status code of {restResponse.StatusCode} was returned.\r\nRequest Uri: {httpResponseMessage.RequestMessage.RequestUri}", restResponse, this);
         }
         #endregion
     }
