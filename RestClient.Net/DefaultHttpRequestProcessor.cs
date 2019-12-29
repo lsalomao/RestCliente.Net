@@ -69,6 +69,36 @@ namespace RestClientDotNet
             return httpRequestMessage;
         }
 
+        public async Task<RestResponseBase<TResponseBody>> GetRestResponse<TResponseBody>(HttpResponseMessage httpResponseMessage, byte[] responseBodyData, ISerializationAdapter serializationAdapter)
+        {
+            if (httpResponseMessage == null) throw new ArgumentNullException(naemof());
+
+            var restHeadersCollection = new RestResponseHeaders(httpResponseMessage.Headers);
+
+            TResponseBody responseBody;
+            try
+            {
+                responseBody = serializationAdapter.Deserialize<TResponseBody>(responseBodyData, restHeadersCollection);
+            }
+            catch (Exception ex)
+            {
+                throw new DeserializationException(Messages.ErrorMessageDeserialization, responseBodyData, ex);
+            }
+
+            var restResponse = new RestResponse<TResponseBody>
+            (
+                restHeadersCollection,
+                (int)httpResponseMessage.StatusCode,
+                httpResponseMessage.RequestMessage.RequestUri,
+                httpResponseMessage.RequestMessage.Method.ToHttpVerb(),
+                responseBodyData,
+                responseBody,
+                httpResponseMessage
+            );
+
+            return restResponse;
+        }
+
         public virtual Task<HttpResponseMessage> SendRestRequestAsync<TRequestBody>(HttpClient httpClient, RestRequest<TRequestBody> restRequest, byte[] requestBodyData)
         {
             if (restRequest == null) throw new ArgumentNullException(nameof(restRequest));

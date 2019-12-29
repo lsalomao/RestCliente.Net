@@ -128,13 +128,6 @@ namespace RestClientDotNet
 
             Tracer?.Trace(restRequest.HttpVerb, httpResponseMessage.RequestMessage.RequestUri, requestBodyData, TraceType.Request, null, restRequest.Headers);
 
-            return await ProcessResponseAsync<TResponseBody, TRequestBody>(restRequest, httpClient, httpResponseMessage);
-        }
-
-
-
-        private async Task<RestResponseBase<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>( HttpResponseMessage httpResponseMessage)
-        {
             byte[] responseData = null;
 
             if (Zip != null)
@@ -154,28 +147,7 @@ namespace RestClientDotNet
                 responseData = await httpResponseMessage.Content.ReadAsByteArrayAsync();
             }
 
-            var restHeadersCollection = new RestResponseHeaders(httpResponseMessage.Headers);
-
-            TResponseBody responseBody;
-            try
-            {
-                responseBody = SerializationAdapter.Deserialize<TResponseBody>(responseData, restHeadersCollection);
-            }
-            catch (Exception ex)
-            {
-                throw new DeserializationException(Messages.ErrorMessageDeserialization, responseData, this, ex);
-            }
-
-            var restResponse = new RestResponse<TResponseBody>
-            (
-                restHeadersCollection,
-                (int)httpResponseMessage.StatusCode,
-                httpResponseMessage.RequestMessage.RequestUri,
-                httpResponseMessage.RequestMessage.Method.ToHttpVerb(),
-                responseData,
-                responseBody,
-                httpResponseMessage
-            );
+            var restResponse = await HttpRequestProcessor.GetRestResponseAsync<TResponseBody>(httpResponseMessage);
 
             Tracer?.Trace(
                 httpResponseMessage.RequestMessage.Method.ToHttpVerb(),
@@ -191,7 +163,12 @@ namespace RestClientDotNet
             }
 
             throw new HttpStatusException($"A status code of {restResponse.StatusCode} was returned.\r\nRequest Uri: {httpResponseMessage.RequestMessage.RequestUri}", restResponse, this);
+
         }
+
+
+
+
         #endregion
     }
 }
