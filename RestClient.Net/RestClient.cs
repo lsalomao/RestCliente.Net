@@ -133,7 +133,7 @@ namespace RestClientDotNet
 
 
 
-        private async Task<RestResponseBase<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(RestRequest<TRequestBody> restRequest, HttpResponseMessage httpResponseMessage)
+        private async Task<RestResponseBase<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>( HttpResponseMessage httpResponseMessage)
         {
             byte[] responseData = null;
 
@@ -171,14 +171,14 @@ namespace RestClientDotNet
                 restHeadersCollection,
                 (int)httpResponseMessage.StatusCode,
                 httpResponseMessage.RequestMessage.RequestUri,
-                restRequest.HttpVerb,
+                httpResponseMessage.RequestMessage.Method.ToHttpVerb(),
                 responseData,
                 responseBody,
                 httpResponseMessage
             );
 
             Tracer?.Trace(
-                restRequest.HttpVerb,
+                httpResponseMessage.RequestMessage.Method.ToHttpVerb(),
                 httpResponseMessage.RequestMessage.RequestUri,
                 responseData,
                 TraceType.Response,
