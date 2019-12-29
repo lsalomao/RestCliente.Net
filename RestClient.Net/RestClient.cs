@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 #pragma warning disable CA2000
@@ -22,6 +23,15 @@ namespace RestClientDotNet
         public Uri BaseUri { get; }
         public string Name { get; }
         public IHttpRequestProcessor HttpRequestProcessor { get; }
+        public Func<HttpClient, Func<HttpRequestMessage>, CancellationToken, Task<HttpResponseMessage>> SendHttpRequestFunc { get; }
+        #endregion
+
+        #region Func
+        private static readonly Func<HttpClient, Func<HttpRequestMessage>, CancellationToken, Task<HttpResponseMessage>> DefaultSendHttpRequestMessageFunc = (httpClient, httpRequestMessageFunc, cancellationToken) =>
+        {
+            var httpRequestMessage = httpRequestMessageFunc.Invoke();
+            return httpClient.SendAsync(httpRequestMessage, cancellationToken);
+        };
         #endregion
 
         #region Constructors
@@ -88,13 +98,26 @@ namespace RestClientDotNet
         }
 
         public RestClient(
+            ISerializationAdapter serializationAdapter,
+            IHttpClientFactory httpClientFactory,
+            ITracer tracer,
+            Uri baseUri,
+            TimeSpan timeout,
+            string name,
+            IHttpRequestProcessor httpRequestProcessor)
+            : this(serializationAdapter, httpClientFactory, tracer, baseUri, timeout, name, httpRequestProcessor, null)
+        {
+        }
+
+        public RestClient(
         ISerializationAdapter serializationAdapter,
         IHttpClientFactory httpClientFactory,
         ITracer tracer,
         Uri baseUri,
         TimeSpan timeout,
         string name,
-        IHttpRequestProcessor httpRequestProcessor)
+        IHttpRequestProcessor httpRequestProcessor,
+        Func<HttpClient, Func<HttpRequestMessage>, CancellationToken, Task<HttpResponseMessage>> sendHttpRequestFunc)
         {
             SerializationAdapter = serializationAdapter;
             Tracer = tracer;
@@ -104,6 +127,7 @@ namespace RestClientDotNet
             Name = name ?? nameof(RestClient);
             HttpRequestProcessor = httpRequestProcessor ?? new DefaultHttpRequestProcessor();
             HttpClientFactory = httpClientFactory ?? new DefaultHttpClientFactory();
+            SendHttpRequestFunc = sendHttpRequestFunc ?? DefaultSendHttpRequestMessageFunc;
         }
 
         #endregion
@@ -124,10 +148,19 @@ namespace RestClientDotNet
                 requestBodyData = SerializationAdapter.Serialize(restRequest.Body, restRequest.Headers);
             }
 
-            var httpResponseMessage = await HttpRequestProcessor.SendRestRequestAsync(httpClient, restRequest, requestBodyData);
+            var httpResponseMessage = await SendHttpRequestFunc.Invoke(
+                httpClient,
+                () => HttpRequestProcessor.GetHttpRequestMessage(restRequest, requestBodyData),
+                restRequest.CancellationToken
+                );
 
             Tracer?.Trace(restRequest.HttpVerb, httpResponseMessage.RequestMessage.RequestUri, requestBodyData, TraceType.Request, null, restRequest.Headers);
 
+            return await ProcessResponseAsync<TResponseBody, TRequestBody>(restRequest, httpClient, httpResponseMessage);
+        }
+
+        private async Task<RestResponseBase<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(RestRequest<TRequestBody> restRequest, HttpClient httpClient, HttpResponseMessage httpResponseMessage)
+        {
             byte[] responseData = null;
 
             if (Zip != null)

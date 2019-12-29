@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 using Xml2CSharp;
 
 #if (NETCOREAPP3_1)
+using Polly.Extensions.Http;
+using Polly;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using ApiExamples;
@@ -791,6 +793,14 @@ namespace RestClientDotNet.UnitTests
         [TestMethod]
         public async Task TestPollyIncorrectUri()
         {
+            var tries = 0;
+
+            var policy = HttpPolicyExtensions
+              .HandleTransientHttpError()
+              .OrResult(response => response.StatusCode == HttpStatusCode.NotFound)
+              .RetryAsync(3);
+
+
             var restClient = new RestClient(
                 new ProtobufSerializationAdapter(),
                 _testServerHttpClientFactory,
@@ -798,7 +808,20 @@ namespace RestClientDotNet.UnitTests
                 new Uri(LocalBaseUriString),
                 default,
                 null,
-                new PollyUriCorrectingHttpRequestProcessor());
+                null,
+                (httpClient, httpRequestMessageFunc, cancellationToken) =>
+                {
+                    return policy.ExecuteAsync(()=> 
+                    {
+                        var httpRequestMessage = httpRequestMessageFunc.Invoke();
+
+                        //On the third try change the Url to a the correct one
+                        if (tries == 2) httpRequestMessage.RequestUri = new Uri("Person", UriKind.Relative);
+                        tries++;
+                        return httpClient.SendAsync(httpRequestMessage, cancellationToken);
+                    });
+                }
+                );
 
             var person = new Person { FirstName = "Bob", Surname = "Smith" };
 

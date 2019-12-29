@@ -1,6 +1,5 @@
 ﻿using RestClientDotNet.Abstractions;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace RestClientDotNet
 {
@@ -8,7 +7,5 @@ namespace RestClientDotNet
     {
         HttpRequestMessage GetHttpRequestMessage<TRequestBody>(RestRequest<TRequestBody> restRequest, byte[] requestBodyData);
         Task<RestResponseBase<TResponseBody>> GetRestResponse<TResponseBody>(HttpResponseMessage httpResponseMessage, byte[] responseBodyData);
-
-        //Task<HttpResponseMessage> SendRestRequestAsync<TRequestBody>(HttpClient httpClient, RestRequest<TRequestBody> restRequest, byte[] requestBodyData);
     }
 }
