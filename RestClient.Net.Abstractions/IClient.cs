@@ -20,7 +20,7 @@ namespace RestClient.Net.Abstractions
         /// <typeparam name="TRequestBody">The type of the request body if specified</typeparam>
         /// <param name="request">The request that will be translated to a http request</param>
         /// <returns></returns>
-        Task<Response<TResponseBody>> SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request);
+        Task<Response<TResponseBody>> SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request) where TResponseBody : class;
 
         /// <summary>
         /// Default headers to be sent with http requests

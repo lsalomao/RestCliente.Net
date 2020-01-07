@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestClient.Net.CoreSample",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestClient.Net.Abstractions", "RestClient.Net.Abstractions\RestClient.Net.Abstractions.csproj", "{7D1D4D6B-CE36-4835-855D-CE0E1178B061}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestClient.Net.DependencyInjection", "RestClient.Net.DependencyInjection\RestClient.Net.DependencyInjection.csproj", "{2A078D5B-8F5C-40F2-814F-0ABE310DEC61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{7D1D4D6B-CE36-4835-855D-CE0E1178B061}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D1D4D6B-CE36-4835-855D-CE0E1178B061}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D1D4D6B-CE36-4835-855D-CE0E1178B061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A078D5B-8F5C-40F2-814F-0ABE310DEC61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A078D5B-8F5C-40F2-814F-0ABE310DEC61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A078D5B-8F5C-40F2-814F-0ABE310DEC61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A078D5B-8F5C-40F2-814F-0ABE310DEC61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

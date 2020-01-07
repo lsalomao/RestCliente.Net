@@ -166,8 +166,10 @@ namespace RestClient.Net
         #endregion
 
         #region Implementation
-        async Task<Response<TResponseBody>> IClient.SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request)
+        public async Task<Response<TResponseBody>> SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request) where TResponseBody : class
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             var httpClient = HttpClientFactory.CreateClient(Name);
 
             //Note: if HttpClient naming is not handled properly, this may alter the HttpClient of another RestClient
@@ -221,7 +223,7 @@ namespace RestClient.Net
             return await ProcessResponseAsync<TResponseBody, TRequestBody>(request, httpResponseMessage);
         }
 
-        private async Task<Response<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request, HttpResponseMessage httpResponseMessage)
+        private async Task<Response<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request, HttpResponseMessage httpResponseMessage) where TResponseBody : class
         {
             byte[] responseData = null;
 

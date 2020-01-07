@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RestClient.Net.Abstractions;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -7,21 +8,18 @@ namespace RestClient.Net
 {
     public class NewtonsoftSerializationAdapter : ISerializationAdapter
     {
+        private JsonSerializer JsonSerializer = JsonSerializer.Create();
+
         #region Implementation
-        public TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders)
+        public TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders) where TResponseBody : class
         {
-            //This here is why I don't like JSON serialization. 😢
-            //Note: on some services the headers should be checked for encoding 
-            var markup = Encoding.UTF8.GetString(data);
 
-            object markupAsObject = markup;
-
-            if (typeof(TResponseBody) == typeof(string))
+            using (var stream = new MemoryStream(data))
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
-                return (TResponseBody)markupAsObject;
+                var responseBody = JsonSerializer.Deserialize(reader, typeof(TResponseBody));
+                return responseBody as TResponseBody;
             }
-
-            return JsonConvert.DeserializeObject<TResponseBody>(markup);
         }
 
         public byte[] Serialize<TRequestBody>(TRequestBody value, IHeadersCollection requestHeaders)
