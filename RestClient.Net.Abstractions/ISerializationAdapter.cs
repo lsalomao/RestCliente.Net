@@ -1,4 +1,6 @@
-﻿namespace RestClient.Net.Abstractions
+﻿using System.IO;
+
+namespace RestClient.Net.Abstractions
 {
     public interface ISerializationAdapter
     {
@@ -18,6 +20,6 @@
         /// <param name="data">The Http Response's body data</param>
         /// <param name="responseHeaders">The headers on the Http Response from the server</param>
         /// <returns></returns>
-        TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders);
+        TResponseBody Deserialize<TResponseBody>(Stream data, IHeadersCollection responseHeaders);
     }
 }

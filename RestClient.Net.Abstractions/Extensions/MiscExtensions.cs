@@ -21,11 +21,16 @@ namespace RestClient.Net.Abstractions.Extensions
             restClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
+#pragma warning disable IDE0060 // Remove unused parameter
         public static TResponseBody DeserializeResponseBody<TResponseBody>(this IClient restClient, Response response)
+#pragma warning restore IDE0060 // Remove unused parameter
+#pragma warning restore IDE0060 // Remove unused parameter
         {
-            if (restClient == null) throw new ArgumentNullException(nameof(restClient));
-            if (response == null) throw new ArgumentNullException(nameof(response));
-            return restClient.SerializationAdapter.Deserialize<TResponseBody>(response.GetResponseData(), response.Headers);
+            throw new NotImplementedException();
+            //if (restClient == null) throw new ArgumentNullException(nameof(restClient));
+            //if (response == null) throw new ArgumentNullException(nameof(response));
+            //return restClient.SerializationAdapter.Deserialize<TResponseBody>(response.GetResponseData(), response.Headers);
         }
 
         public static void SetJsonContentTypeHeader(this IClient restClient)

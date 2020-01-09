@@ -247,7 +247,7 @@ namespace RestClient.Net
             TResponseBody responseBody;
             try
             {
-                responseBody = SerializationAdapter.Deserialize<TResponseBody>(responseData, httpResponseHeadersCollection);
+                responseBody = SerializationAdapter.Deserialize<TResponseBody>(await httpResponseMessage.Content.ReadAsStreamAsync(), httpResponseHeadersCollection);
             }
             catch (Exception ex)
             {

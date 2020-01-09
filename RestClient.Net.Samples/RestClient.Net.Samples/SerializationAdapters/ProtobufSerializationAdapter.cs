@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using RestClient.Net.Abstractions;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace RestClient.Net
@@ -14,7 +15,7 @@ namespace RestClient.Net
             return message.ToByteArray();
         }
 
-        public TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders)
+        public TResponseBody Deserialize<TResponseBody>(Stream data, IHeadersCollection responseHeaders)
         {
             var messageType = typeof(TResponseBody);
             var parserProperty = messageType.GetProperty("Parser");

@@ -1,4 +1,5 @@
 ﻿using RestClient.Net.Abstractions;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,15 +11,15 @@ namespace RestClient.Net
     {
         #region Public Methods
 
-        public TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders)
+        public TResponseBody Deserialize<TResponseBody>(Stream stream, IHeadersCollection responseHeaders)
         {
-            var serializer = new XmlSerializer(typeof(TResponseBody));
-            using (var stream = new MemoryStream())
-            {
-                stream.Write(data, 0, data.Length);
-                stream.Seek(0, SeekOrigin.Begin);
-                return (TResponseBody)serializer.Deserialize(stream);
-            }
+            throw new NotImplementedException();
+            //var serializer = new XmlSerializer(typeof(TResponseBody));
+            
+            //    stream.Write(data, 0, data.Length);
+            //    stream.Seek(0, SeekOrigin.Begin);
+            //    return (TResponseBody)serializer.Deserialize(stream);
+            
         }
 
         public byte[] Serialize<TRequestBody>(TRequestBody value, IHeadersCollection requestHeaders)
