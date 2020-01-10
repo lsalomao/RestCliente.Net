@@ -18,6 +18,6 @@
         /// <param name="data">The Http Response's body data</param>
         /// <param name="responseHeaders">The headers on the Http Response from the server</param>
         /// <returns></returns>
-        TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders) where TResponseBody : class;
+        TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders);
     }
 }

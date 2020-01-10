@@ -61,7 +61,7 @@ namespace RestClient.Net
         /// <summary>
         /// Name of the client
         /// </summary>
-        public string Name { get; }
+        public string Name => RequestConverter.Name;
 
         /// <summary>
         /// Gets the current IRequestConverter instance responsible for converting rest requests to http requests
@@ -136,13 +136,12 @@ namespace RestClient.Net
             IHttpClientFactory httpClientFactory = null,
             IRequestConverter requestConverter = null)
         {
+            var defaultRequestConverter = new DefaultRequestConverter(httpClientFactory ?? new DefaultHttpClientFactory(), name);
+            RequestConverter = requestConverter ?? defaultRequestConverter;
             SerializationAdapter = serializationAdapter ?? throw new ArgumentNullException(nameof(serializationAdapter));
             Logger = logger;
             BaseUri = baseUri;
-            Name = name ?? "RestClient";
             DefaultRequestHeaders = defaultRequestHeaders ?? new RequestHeadersCollection();
-            var defaultRequestConverter = new DefaultRequestConverter(httpClientFactory ?? new DefaultHttpClientFactory());
-            RequestConverter = requestConverter ?? defaultRequestConverter;
         }
 
         #endregion

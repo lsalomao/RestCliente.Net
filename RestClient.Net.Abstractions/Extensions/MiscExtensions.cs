@@ -21,7 +21,7 @@ namespace RestClient.Net.Abstractions.Extensions
             restClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
         }
 
-        public static TResponseBody DeserializeResponseBody<TResponseBody>(this IClient restClient, Response response) where TResponseBody : class
+        public static TResponseBody DeserializeResponseBody<TResponseBody>(this IClient restClient, Response response)
         {
             if (restClient == null) throw new ArgumentNullException(nameof(restClient));
             if (response == null) throw new ArgumentNullException(nameof(response));

@@ -14,8 +14,13 @@ namespace RestClient.Net
         public Uri BaseUri { get; set; }
         public string Name { get; set; }
 
-        public DefaultRequestConverter(IHttpClientFactory httpClientFactory)
+        public DefaultRequestConverter(IHttpClientFactory httpClientFactory) : this(httpClientFactory, null)
         {
+        }
+
+        public DefaultRequestConverter(IHttpClientFactory httpClientFactory, string name)
+        {
+            Name = name ?? "RestClient";
             HttpClientFactory = httpClientFactory;
         }
 

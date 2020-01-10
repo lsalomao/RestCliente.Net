@@ -10,6 +10,7 @@ namespace RestClient.Net
     /// </summary>
     public interface IRequestConverter
     {
+        string Name { get; }
         TimeSpan Timeout { get; set; }
         Uri BaseUri { get; set; }
 

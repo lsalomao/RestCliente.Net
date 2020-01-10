@@ -14,7 +14,7 @@ namespace RestClient.Net
         #endregion
 
         #region Public Methods
-        public TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders) where TResponseBody : class
+        public TResponseBody Deserialize<TResponseBody>(byte[] data, IHeadersCollection responseHeaders)
         {
             var serializer = new DataContractSerializer(typeof(TResponseBody), KnownDataContracts);
             using (var stream = new MemoryStream(data))
