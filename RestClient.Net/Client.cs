@@ -147,7 +147,7 @@ namespace RestClient.Net
         #endregion
 
         #region Implementation
-        public async Task<Response<TResponseBody>> SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request) where TResponseBody : class
+        public async Task<Response<TResponseBody>> SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -194,7 +194,7 @@ namespace RestClient.Net
             return await ProcessResponseAsync<TResponseBody, TRequestBody>(request, httpResponseMessage);
         }
 
-        private async Task<Response<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request, HttpResponseMessage httpResponseMessage) where TResponseBody : class
+        private async Task<Response<TResponseBody>> ProcessResponseAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request, HttpResponseMessage httpResponseMessage)
         {
             byte[] responseData = null;
 
