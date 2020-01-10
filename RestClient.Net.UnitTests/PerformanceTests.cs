@@ -25,16 +25,16 @@ namespace RestClient.Net.UnitTests
             DateTime startTime = default;
 
             //Flurl.Http
-            //startTime = DateTime.Now;
-            //var flurlClient = new FlurlClient("https://restcountries.eu/rest/v2/");
+            startTime = DateTime.Now;
+            var flurlClient = new FlurlClient("https://restcountries.eu/rest/v2/");
 
-            //for (var i = 0; i < Repeats; i++)
-            //{
-            //    countryData = await flurlClient.Request().GetJsonAsync<List<RestCountry>>();
-            //    Assert.IsTrue(countryData.Count > 0);
-            //}
-            //var flurlTotalMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
-            //Console.WriteLine($"Flurl.Http Get : Total Milliseconds:{ flurlTotalMilliseconds}");
+            for (var i = 0; i < Repeats; i++)
+            {
+                countryData = await flurlClient.Request().GetJsonAsync<List<RestCountry>>();
+                Assert.IsTrue(countryData.Count > 0);
+            }
+            var flurlTotalMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
+            Console.WriteLine($"Flurl.Http Get : Total Milliseconds:{ flurlTotalMilliseconds}");
 
 
             //RestClient.Net

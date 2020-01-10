@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 #pragma warning disable CA2000
 
@@ -9,11 +10,40 @@ namespace RestClient.Net
 {
     public class DefaultRequestConverter : IRequestConverter
     {
+        public TimeSpan Timeout { get; set; }
+        public Uri BaseUri { get; set; }
+        public string Name { get; set; }
+
+        public DefaultRequestConverter(IHttpClientFactory httpClientFactory)
+        {
+            HttpClientFactory = httpClientFactory;
+        }
+
         #region Public Methods
         public static readonly List<HttpRequestMethod> UpdateHttpRequestMethods = new List<HttpRequestMethod> { HttpRequestMethod.Put, HttpRequestMethod.Post, HttpRequestMethod.Patch };
         #endregion
 
         #region Implementation
+        /// <summary>
+        /// Gets the current IHttpClientFactory instance that is used for getting or creating HttpClient instances when the SendAsync call is made
+        /// </summary>
+        public IHttpClientFactory HttpClientFactory { get; }
+
+        public Task<HttpResponseMessage> SendAsync<T>(Request<T> request, IRequestConverter requestConverter, byte[] requestBodyData)
+        {
+            var httpClient = HttpClientFactory.CreateClient(Name);
+
+            //Note: if HttpClient naming is not handled properly, this may alter the HttpClient of another RestClient
+            if (httpClient.Timeout != Timeout && Timeout != default) httpClient.Timeout = Timeout;
+            if (httpClient.BaseAddress != BaseUri && BaseUri != null) httpClient.BaseAddress = BaseUri;
+
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (requestConverter == null) throw new ArgumentNullException(nameof(requestConverter));
+
+            var httpRequestMessage = requestConverter.GetHttpRequestMessage(request, requestBodyData);
+            return httpClient.SendAsync(httpRequestMessage, request.CancellationToken);
+        }
+
         public virtual HttpRequestMessage GetHttpRequestMessage<TRequestBody>(Request<TRequestBody> request, byte[] requestBodyData)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));

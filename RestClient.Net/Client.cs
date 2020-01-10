@@ -9,27 +9,19 @@ using RestClient.Net.Abstractions;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 #pragma warning disable CA2000
 
 namespace RestClient.Net
 {
+
     /// <summary>
     /// Rest client implementation using Microsoft's HttpClient class. 
     /// </summary>
     public sealed class Client : IClient
     {
-        #region Fields
-        private readonly Func<HttpClient, Func<HttpRequestMessage>, CancellationToken, Task<HttpResponseMessage>> _sendHttpRequestFunc;
-        #endregion
-
         #region Public Properties
-        /// <summary>
-        /// Gets the current IHttpClientFactory instance that is used for getting or creating HttpClient instances when the SendAsync call is made
-        /// </summary>
-        public IHttpClientFactory HttpClientFactory { get; }
 
         /// <summary>
         /// Compresses and decompresses http requests 
@@ -44,7 +36,7 @@ namespace RestClient.Net
         /// <summary>
         /// Default timeout for http requests
         /// </summary>
-        public TimeSpan Timeout { get; set; }
+        public TimeSpan Timeout { get => RequestConverter.Timeout; set => RequestConverter.Timeout = value; }
 
         /// <summary>
         /// Adapter for serialization/deserialization of http body data
@@ -64,7 +56,7 @@ namespace RestClient.Net
         /// <summary>
         /// Base Uri for the client. Any resources specified on requests will be relative to this.
         /// </summary>
-        public Uri BaseUri { get; set; }
+        public Uri BaseUri { get => RequestConverter.BaseUri; set => RequestConverter.BaseUri = value; }
 
         /// <summary>
         /// Name of the client
@@ -75,14 +67,6 @@ namespace RestClient.Net
         /// Gets the current IRequestConverter instance responsible for converting rest requests to http requests
         /// </summary>
         public IRequestConverter RequestConverter { get; }
-        #endregion
-
-        #region Func
-        private static readonly Func<HttpClient, Func<HttpRequestMessage>, CancellationToken, Task<HttpResponseMessage>> DefaultSendHttpRequestMessageFunc = (httpClient, httpRequestMessageFunc, cancellationToken) =>
-        {
-            var httpRequestMessage = httpRequestMessageFunc.Invoke();
-            return httpClient.SendAsync(httpRequestMessage, cancellationToken);
-        };
         #endregion
 
         #region Constructors
@@ -150,7 +134,6 @@ namespace RestClient.Net
             IHeadersCollection defaultRequestHeaders = null,
             ILogger logger = null,
             IHttpClientFactory httpClientFactory = null,
-            Func<HttpClient, Func<HttpRequestMessage>, CancellationToken, Task<HttpResponseMessage>> sendHttpRequestFunc = null,
             IRequestConverter requestConverter = null)
         {
             SerializationAdapter = serializationAdapter ?? throw new ArgumentNullException(nameof(serializationAdapter));
@@ -158,9 +141,8 @@ namespace RestClient.Net
             BaseUri = baseUri;
             Name = name ?? "RestClient";
             DefaultRequestHeaders = defaultRequestHeaders ?? new RequestHeadersCollection();
-            RequestConverter = requestConverter ?? new DefaultRequestConverter();
-            HttpClientFactory = httpClientFactory ?? new DefaultHttpClientFactory();
-            _sendHttpRequestFunc = sendHttpRequestFunc ?? DefaultSendHttpRequestMessageFunc;
+            var defaultRequestConverter = new DefaultRequestConverter(httpClientFactory ?? new DefaultHttpClientFactory());
+            RequestConverter = requestConverter ?? defaultRequestConverter;
         }
 
         #endregion
@@ -169,12 +151,6 @@ namespace RestClient.Net
         public async Task<Response<TResponseBody>> SendAsync<TResponseBody, TRequestBody>(Request<TRequestBody> request) where TResponseBody : class
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
-
-            var httpClient = HttpClientFactory.CreateClient(Name);
-
-            //Note: if HttpClient naming is not handled properly, this may alter the HttpClient of another RestClient
-            if (httpClient.Timeout != Timeout && Timeout != default) httpClient.Timeout = Timeout;
-            if (httpClient.BaseAddress != BaseUri && BaseUri != null) httpClient.BaseAddress = BaseUri;
 
             byte[] requestBodyData = null;
 
@@ -186,11 +162,7 @@ namespace RestClient.Net
             HttpResponseMessage httpResponseMessage;
             try
             {
-                httpResponseMessage = await _sendHttpRequestFunc.Invoke(
-                    httpClient,
-                    () => RequestConverter.GetHttpRequestMessage(request, requestBodyData),
-                    request.CancellationToken
-                    );
+                httpResponseMessage = await RequestConverter.SendAsync(request, RequestConverter, requestBodyData);
             }
             catch (TaskCanceledException tce)
             {
