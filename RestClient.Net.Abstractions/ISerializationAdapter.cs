@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace RestClient.Net.Abstractions
 {
@@ -11,7 +12,7 @@ namespace RestClient.Net.Abstractions
         /// <param name="value">The object to be serialized</param>
         /// <param name="requestHeaders">Headers that will be sent as part of the Http Request</param>
         /// <returns></returns>
-        byte[] Serialize<TRequestBody>(TRequestBody value, IHeadersCollection requestHeaders);
+        Task<byte[]> Serialize<TRequestBody>(TRequestBody value, IHeadersCollection requestHeaders);
 
         /// <summary>
         /// Takes binary data from the Http Response and converts it to an object of type T
@@ -20,6 +21,6 @@ namespace RestClient.Net.Abstractions
         /// <param name="data">The Http Response's body data</param>
         /// <param name="responseHeaders">The headers on the Http Response from the server</param>
         /// <returns></returns>
-        TResponseBody Deserialize<TResponseBody>(Stream data, IHeadersCollection responseHeaders);
+        Task<TResponseBody> Deserialize<TResponseBody>(Stream data, IHeadersCollection responseHeaders);
     }
 }

@@ -219,7 +219,7 @@ namespace RestClient.Net
 
             if (DefaultRequestConverter.UpdateHttpRequestMethods.Contains(request.HttpRequestMethod))
             {
-                requestBodyData = SerializationAdapter.Serialize(request.Body, request.Headers);
+                requestBodyData = await SerializationAdapter.Serialize(request.Body, request.Headers);
             }
 
             HttpResponseMessage httpResponseMessage;
@@ -293,7 +293,7 @@ namespace RestClient.Net
             TResponseBody responseBody;
             try
             {
-                responseBody = SerializationAdapter.Deserialize<TResponseBody>(await httpResponseMessage.Content.ReadAsStreamAsync(), httpResponseHeadersCollection);
+                responseBody = await SerializationAdapter.Deserialize<TResponseBody>(await httpResponseMessage.Content.ReadAsStreamAsync(), httpResponseHeadersCollection);
             }
             catch (Exception ex)
             {
