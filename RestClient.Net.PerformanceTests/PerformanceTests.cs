@@ -11,15 +11,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-//using Refit;
+using Refit;
 
 namespace RestClient.Net.PerformanceTests
 {
-    //public interface IGetPeople
-    //{
-    //    [Get]
-    //    Task<List<Person>> GetPeopleAsync();
-    //}
+    public interface IGetPeople
+    {
+        [Get("/JsonPerson/people")]
+        Task <List<Person>> GetPeopleAsync();
+    }
 
     [TestClass]
     public class PerformanceTests
@@ -63,38 +63,38 @@ namespace RestClient.Net.PerformanceTests
         #endregion
 
         #region Refit
-        //[TestMethod]
-        //[DataRow]
-        //[DataRow]
-        //[DataRow]
-        //[DataRow]
-        //[DataRow]
-        //[DataRow]
-        //public async Task TestGetRefit()
-        //{
-        //    var startTime = DateTime.Now;
-        //    var originalStartTime = DateTime.Now;
-        //    var gitHubApi = RestService.For<IGetPeople>("https://api.github.com");
+        [TestMethod]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        public async Task TestGetRefit()
+        {
+            var startTime = DateTime.Now;
+            var originalStartTime = DateTime.Now;
+            var client = RestService.For<IGetPeople>("https://localhost:44337");
 
-        //    startTime = DateTime.Now;
-        //    var people = await flurlClient.Request().GetJsonAsync<List<Person>>();
-        //    var timesOne = (DateTime.Now - startTime).TotalMilliseconds;
+            startTime = DateTime.Now;
+            var people = await client.GetPeopleAsync();
+            var timesOne = (DateTime.Now - startTime).TotalMilliseconds;
 
-        //    startTime = DateTime.Now;
-        //    for (var i = 0; i < Repeats; i++)
-        //    {
-        //        people = await flurlClient.Request().GetJsonAsync<List<Person>>();
-        //        Assert.IsTrue(people != null);
-        //        Assert.IsTrue(people.Count > 0);
-        //    }
+            startTime = DateTime.Now;
+            for (var i = 0; i < Repeats; i++)
+            {
+                people = await client.GetPeopleAsync();
+                Assert.IsTrue(people != null);
+                Assert.IsTrue(people.Count > 0);
+            }
 
-        //    var timesRepeats = (DateTime.Now - startTime).TotalMilliseconds;
-        //    var total = (DateTime.Now - originalStartTime).TotalMilliseconds;
+            var timesRepeats = (DateTime.Now - startTime).TotalMilliseconds;
+            var total = (DateTime.Now - originalStartTime).TotalMilliseconds;
 
-        //    var message = $"Flurl,GET,{timesOne},{timesRepeats},{total}\r\n";
-        //    WriteText(message);
-        //    Console.WriteLine(message);
-        //}
+            var message = $"Flurl,GET,{timesOne},{timesRepeats},{total}\r\n";
+            WriteText(message);
+            Console.WriteLine(message);
+        }
         #endregion
 
         #region Flurl
