@@ -15,10 +15,13 @@ using Refit;
 
 namespace RestClient.Net.PerformanceTests
 {
-    public interface IGetPeople
+    public interface IPeopleService
     {
         [Get("/JsonPerson/people")]
         Task <List<Person>> GetPeopleAsync();
+
+        [Post("/JsonPerson/people")]
+        Task<List<Person>> PostPeopleAsync(List<Person> people);
     }
 
     [TestClass]
@@ -74,7 +77,7 @@ namespace RestClient.Net.PerformanceTests
         {
             var startTime = DateTime.Now;
             var originalStartTime = DateTime.Now;
-            var client = RestService.For<IGetPeople>("https://localhost:44337");
+            var client = RestService.For<IPeopleService>("https://localhost:44337");
 
             startTime = DateTime.Now;
             var people = await client.GetPeopleAsync();
@@ -92,6 +95,44 @@ namespace RestClient.Net.PerformanceTests
             var total = (DateTime.Now - originalStartTime).TotalMilliseconds;
 
             var message = $"Flurl,GET,{timesOne},{timesRepeats},{total}\r\n";
+            WriteText(message);
+            Console.WriteLine(message);
+        }
+
+        [TestMethod]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        [DataRow]
+        public async Task TestPostRefit()
+        {
+            var startTime = DateTime.Now;
+            var originalStartTime = DateTime.Now;
+            var client = RestService.For<IPeopleService>("https://localhost:44337");
+
+            var peopleRequest = new List<Person>();
+            for (var i = 0; i < 10; i++)
+            {
+                peopleRequest.Add(new Person { FirstName = "Test" + i });
+            }
+
+            startTime = DateTime.Now;
+            var people = await client.PostPeopleAsync(peopleRequest);
+            var timesOne = (DateTime.Now - startTime).TotalMilliseconds;
+
+            for (var i = 0; i < Repeats; i++)
+            {
+                people = await client.PostPeopleAsync(peopleRequest);
+                Assert.IsTrue(people != null);
+                Assert.IsTrue(people.Count > 0);
+            }
+
+            var timesRepeats = (DateTime.Now - startTime).TotalMilliseconds;
+            var total = (DateTime.Now - originalStartTime).TotalMilliseconds;
+
+            var message = $"RestClient.Net,POST,{timesOne},{timesRepeats},{total}\r\n";
             WriteText(message);
             Console.WriteLine(message);
         }
