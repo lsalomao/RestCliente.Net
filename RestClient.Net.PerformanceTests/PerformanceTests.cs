@@ -1,6 +1,4 @@
-﻿
-
-using ApiExamples.Model.JsonModel;
+﻿using ApiExamples.Model.JsonModel;
 using Flurl.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -12,6 +10,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Refit;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 
 namespace RestClient.Net.PerformanceTests
 {
@@ -75,28 +75,28 @@ namespace RestClient.Net.PerformanceTests
         [DataRow]
         public async Task TestGetRefit()
         {
-            var startTime = DateTime.Now;
-            var originalStartTime = DateTime.Now;
-            var client = RestService.For<IPeopleService>("https://localhost:44337");
+            BenchmarkRunnerCore.Run(null, (a) => { return true; });
+        }
 
-            startTime = DateTime.Now;
-            var people = await client.GetPeopleAsync();
-            var timesOne = (DateTime.Now - startTime).TotalMilliseconds;
+        //public void asdsdf()
+        //{
+        //    var client = RestService.For<IPeopleService>("https://localhost:44337");
 
-            startTime = DateTime.Now;
-            for (var i = 0; i < Repeats; i++)
-            {
-                people = await client.GetPeopleAsync();
-                Assert.IsTrue(people != null);
-                Assert.IsTrue(people.Count > 0);
-            }
+        //    var people = await RefitGetPeopleAsync(client);
 
-            var timesRepeats = (DateTime.Now - startTime).TotalMilliseconds;
-            var total = (DateTime.Now - originalStartTime).TotalMilliseconds;
+        //    for (var i = 0; i < Repeats; i++)
+        //    {
+        //        people = await RefitGetPeopleAsync(client);
+        //        Assert.IsTrue(people != null);
+        //        Assert.IsTrue(people.Count > 0);
+        //    }
 
-            var message = $"Flurl,GET,{timesOne},{timesRepeats},{total}\r\n";
-            WriteText(message);
-            Console.WriteLine(message);
+        //}
+
+        [Benchmark]
+        private static async Task<List<Person>> RefitGetPeopleAsync(IPeopleService client)
+        {
+            return await client.GetPeopleAsync();
         }
 
         [TestMethod]
