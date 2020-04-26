@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_0 || NETSTANDARD2_0
+﻿#if !NET45
 
 using Microsoft.Extensions.Logging;
 using RestClient.Net.Abstractions;

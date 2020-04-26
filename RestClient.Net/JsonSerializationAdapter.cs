@@ -1,4 +1,7 @@
-﻿using RestClient.Net.Abstractions;
+﻿
+#if !NET45
+
+using RestClient.Net.Abstractions;
 using System.Text;
 using System.Text.Json;
 
@@ -51,4 +54,4 @@ namespace RestClient.Net
         #endregion
     }
 }
-
+#endif
