@@ -9,7 +9,6 @@ namespace RestClient.Net
         /// <summary>
         /// Construct a client.
         /// </summary>
-        /// <param name="serializationAdapter">The serialization adapter for serializing/deserializing http content bodies. Defaults to JSON and adds the default Content-Type header for JSON</param>
         /// <param name="serializationAdapter">The serialization adapter for serializing/deserializing http content bodies. 
         /// <param name="name">The of the client instance. This is also passed to the HttpClient factory to get or create HttpClient instances</param>
         /// <param name="baseUri">The base Url for the client. Specify this if the client will be used for one Url only</param>
