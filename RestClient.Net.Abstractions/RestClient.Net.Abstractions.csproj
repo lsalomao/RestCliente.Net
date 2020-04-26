@@ -28,7 +28,7 @@ This package contains abstractions for dependency injection with no implementati
     <Compile Remove="Logging/LogLevel.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <Compile Remove="JsonSerializationAdapter.cs" />
    </ItemGroup>
 
