@@ -5,7 +5,7 @@ using RestClient.Net.Abstractions.Logging;
 using Microsoft.Extensions.Logging;
 #endif
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETSTANDARD2_0
 using RestClient.Net.Abstractions.Extensions;
 #endif
 
@@ -23,7 +23,7 @@ namespace RestClient.Net
     /// <summary>
     /// Rest client implementation using Microsoft's HttpClient class. 
     /// </summary>
-    public sealed class Client : IClient
+    public sealed partial class Client : IClient
     {
         #region Fields
         private readonly Func<HttpClient, Func<HttpRequestMessage>, ILogger, CancellationToken, Task<HttpResponseMessage>> _sendHttpRequestFunc;
@@ -112,20 +112,7 @@ namespace RestClient.Net
 
         #region Constructors
 
-#if NETCOREAPP3_0
-        /// <summary>
-        /// Construct a client
-        /// </summary>
-        /// <param name="baseUri">The base Url for the client. Specify this if the client will be used for one Url only</param>
-        public Client(
-            Uri baseUri)
-        : this(
-            null,
-            null,
-            baseUri)
-        {
-        }
-#endif
+
 
         /// <summary>
         /// Construct a client
@@ -172,7 +159,6 @@ namespace RestClient.Net
             httpClientFactory: httpClientFactory)
         {
         }
-
         /// <summary>
         /// Construct a client.
         /// </summary>
@@ -189,7 +175,7 @@ namespace RestClient.Net
         /// <param name="sendHttpRequestFunc">The Func responsible for performing the SendAsync method on HttpClient. This can replaced in the constructor in order to implement retries and so on.</param>
         /// <param name="requestConverter">IRequestConverter instance responsible for converting rest requests to http requests</param>
         public Client(
-#if !NETCOREAPP3_0
+#if !NETCOREAPP3_0 && !NETSTANDARD2_0
            ISerializationAdapter serializationAdapter,
 #else
            ISerializationAdapter serializationAdapter = null,
@@ -204,7 +190,7 @@ namespace RestClient.Net
         {
             DefaultRequestHeaders = defaultRequestHeaders ?? new RequestHeadersCollection();
 
-#if !NETCOREAPP3_0
+#if !NETCOREAPP3_0 && !NETSTANDARD2_0
             SerializationAdapter = serializationAdapter ?? throw new ArgumentNullException(nameof(serializationAdapter));
 #else
             if (serializationAdapter == null)
